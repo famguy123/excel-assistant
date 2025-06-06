@@ -1,42 +1,41 @@
 import streamlit as st
 import tempfile
-import os
 from copy_summary_διορθωμένο import copy_updated_sheets
 
+st.set_page_config(page_title="Excel AI Assistant", layout="centered")
 st.title("📊 AI Excel Assistant")
 
 st.markdown("""
-Upload your template and working file.  
-The app will copy:
-- `v1` → **Γενικό Αποτέλεσμα**
-- `v2` → **Διαφορά**
+Upload your Excel file and we'll automatically add:
 
-...and fix formula references.
+- `Γενικό Αποτέλεσμα`
+- `Διαφορά`
+
+...and fix any formula references.
 """)
 
-template_file = st.file_uploader("📁 Upload TEMPLATE file (with v1 & v2)", type=["xlsx"])
-target_file = st.file_uploader("📁 Upload CLIENT file", type=["xlsx"])
+uploaded_file = st.file_uploader("📁 Upload your file", type=["xlsx"])
 
-if template_file and target_file:
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_template, \
-         tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_target, \
-         tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_output:
+if uploaded_file:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as temp_input, \
+         tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as temp_output:
 
-        tmp_template.write(template_file.read())
-        tmp_target.write(target_file.read())
+        template_path = "bilio_with_v1_formulas.xlsx"  # This file stays in the repo
+        temp_input.write(uploaded_file.read())
 
-        # Run the copy function
         copy_updated_sheets(
-            template_path=tmp_template.name,
-            target_path=tmp_target.name,
-            output_path=tmp_output.name
+            template_path=template_path,
+            target_path=temp_input.name,
+            output_path=temp_output.name
         )
 
-        st.success("✅ Processing complete!")
+        st.success("✅ Done! Click below to download your updated file.")
 
-        with open(tmp_output.name, "rb") as f:
+        with open(temp_output.name, "rb") as f:
             st.download_button(
                 label="📥 Download updated file",
                 data=f,
-                file_name="client_file_updated.xlsx"
+                file_name="updated_file.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
+
