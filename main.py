@@ -11,7 +11,7 @@ Upload your Excel file and we'll automatically add:
 - `Γενικό Αποτέλεσμα`
 - `Διαφορά`
 
-...and fix any formula references.
+No manual editing needed — just upload and download.
 """)
 
 uploaded_file = st.file_uploader("📁 Upload your file", type=["xlsx"])
@@ -38,4 +38,3 @@ if uploaded_file:
                 file_name="updated_file.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
-
